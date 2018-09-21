@@ -6,6 +6,8 @@ return [
     Views::NOT_UNAUTHORIZED_PAGE => implode(DIRECTORY_SEPARATOR, ['pages', 'en', '401.html.twig']),
     Views::NOT_FORBIDDEN_PAGE    => implode(DIRECTORY_SEPARATOR, ['pages', 'en', '403.html.twig']),
     Views::NOT_FOUND_PAGE        => implode(DIRECTORY_SEPARATOR, ['pages', 'en', '404.html.twig']),
+    Views::OAUTH_ERROR           => implode(DIRECTORY_SEPARATOR, ['pages', 'en', 'oauth-error.html.twig']),
+    Views::OAUTH_SCOPE_APPROVAL  => implode(DIRECTORY_SEPARATOR, ['pages', 'en', 'oauth-scope-approval.html.twig']),
 
     Views::HOME_PAGE    => implode(DIRECTORY_SEPARATOR, ['pages', 'en', 'home.html.twig']),
     Views::SIGN_IN_PAGE => implode(DIRECTORY_SEPARATOR, ['pages', 'en', 'sign-in.html.twig']),

@@ -64,6 +64,7 @@ class WebRoutes implements RoutesConfiguratorInterface
                     ->get('/', [HomeController::class, 'index'], [RouteInterface::PARAM_NAME => HomeController::ROUTE_NAME_HOME])
                     ->get('/sign-in', AuthController::CALLABLE_SHOW_SIGN_IN, [RouteInterface::PARAM_NAME => AuthController::ROUTE_NAME_SIGN_IN])
                     ->post('/sign-in', AuthController::CALLABLE_AUTHENTICATE)
+                    ->get('/my-client-redirect', AuthController::CALLABLE_OAUTH_CALLBACK)
                     ->get('/sign-out', AuthController::CALLABLE_LOGOUT, [RouteInterface::PARAM_NAME => AuthController::ROUTE_NAME_LOGOUT]);
 
 

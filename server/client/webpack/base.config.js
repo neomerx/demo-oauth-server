@@ -66,11 +66,11 @@ module.exports = {
     devServer: {
         contentBase: publicDir,
         compress: true,
-        port: 8080,
+        port: 8888,
         stats: 'minimal',
         proxy: [{
             context: ['**', '!/assets/**', '!/img/**'],
-            target: 'http://localhost:8090',
+            target: 'http://localhost:8091',
         }],
     },
 };

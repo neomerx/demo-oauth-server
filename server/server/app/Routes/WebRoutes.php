@@ -1,5 +1,6 @@
 <?php namespace App\Routes;
 
+use App\Container\OAuthConfigurator;
 use App\Container\RequestStorageConfigurator;
 use App\Web\Controllers\AuthController;
 use App\Web\Controllers\HomeController;
@@ -51,8 +52,9 @@ class WebRoutes implements RoutesConfiguratorInterface
                 $routes->addContainerConfigurators([
                     WhoopsContainerConfigurator::CONFIGURE_EXCEPTION_HANDLER,
                     CsrfContainerConfigurator::CONFIGURATOR,
-                    SessionContainerConfigurator::CONFIGURATOR,
+                    //SessionContainerConfigurator::CONFIGURATOR,
                     RequestStorageConfigurator::CONFIGURATOR,
+                    OAuthConfigurator::CONFIGURATOR,
                 ])->addMiddleware([
                     CustomErrorResponsesMiddleware::CALLABLE_HANDLER,
                     SessionMiddleware::CALLABLE_HANDLER,
@@ -64,7 +66,10 @@ class WebRoutes implements RoutesConfiguratorInterface
                     ->get('/', [HomeController::class, 'index'], [RouteInterface::PARAM_NAME => HomeController::ROUTE_NAME_HOME])
                     ->get('/sign-in', AuthController::CALLABLE_SHOW_SIGN_IN, [RouteInterface::PARAM_NAME => AuthController::ROUTE_NAME_SIGN_IN])
                     ->post('/sign-in', AuthController::CALLABLE_AUTHENTICATE)
-                    ->get('/sign-out', AuthController::CALLABLE_LOGOUT, [RouteInterface::PARAM_NAME => AuthController::ROUTE_NAME_LOGOUT]);
+                    ->get('/sign-out', AuthController::CALLABLE_LOGOUT, [RouteInterface::PARAM_NAME => AuthController::ROUTE_NAME_LOGOUT])
+                    ->get('/oauth-scope-approval', AuthController::CALLABLE_SHOW_OAUTH_SCOPE_APPROVAL)
+                    ->post('/oauth-scope-approval', AuthController::CALLABLE_POST_OAUTH_SCOPE_APPROVAL)
+                    ->get('/oauth-error', AuthController::CALLABLE_SHOW_OAUTH_ERROR);
 
 
                 $idx = '{' . WebControllerInterface::ROUTE_KEY_INDEX . '}';

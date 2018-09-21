@@ -9,20 +9,6 @@
                 Limoncello
             </a>
         </h5>
-        <nav class="my-2 my-md-0 mr-md-3">
-        </nav>
-        {% if is_signed_in %}
-            {% if can_view_users %}
-                <a class="p-2 text-dark" href="{{ users_url }}">Users</a>
-            {% endif %}
-            {% if can_view_roles %}
-                <a class="p-2 text-dark" href="{{ roles_url }}">Roles</a>
-            {% endif %}
-            <div class="p-2 text-dark">{{ first_name ~ ' ' ~ last_name ~ ' (' ~ role_name ~ ')' }}</div>
-            <a class="btn btn-outline-primary" href="{{ sign_out_url }}">Sign out</a>
-        {% else %}
-            <a class="btn btn-outline-primary" href="{{ sign_in_url }}">Sign in</a>
-        {% endif %}
     </nav>
 {% endblock %}
 

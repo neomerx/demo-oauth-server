@@ -38,4 +38,10 @@ interface Views
 
     /** Template ID. */
     const ROLE_MODIFY_PAGE = self::ROLES_INDEX_PAGE + 1;
+
+    /** Template ID. */
+    const OAUTH_ERROR = self::ROLE_MODIFY_PAGE + 1;
+
+    /** Template ID. */
+    const OAUTH_SCOPE_APPROVAL = self::OAUTH_ERROR + 1;
 }

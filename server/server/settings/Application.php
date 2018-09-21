@@ -59,15 +59,17 @@ class Application implements ApplicationConfigurationInterface
                 \Limoncello\Application\Packages\L10n\L10nProvider::class,
                 \Limoncello\Application\Packages\Monolog\MonologFileProvider::class,
                 \Limoncello\Application\Packages\FileSystem\FileSystemProvider::class,
-                //\Limoncello\Application\Packages\Session\SessionProvider::class,
+                \Limoncello\Application\Packages\Session\SessionProvider::class,
                 \Limoncello\Crypt\Package\HasherProvider::class,
                 //\Limoncello\Crypt\Package\SymmetricCryptProvider::class,
                 //\Limoncello\Crypt\Package\AsymmetricPublicEncryptPrivateDecryptProvider::class,
                 //\Limoncello\Crypt\Package\AsymmetricPrivateEncryptPublicDecryptProvider::class,
                 //\Limoncello\Events\Package\EventProvider::class,
                 \Limoncello\Flute\Package\FluteProvider::class,
-                \Limoncello\Passport\Package\PassportProvider::class,
+                //\Limoncello\Passport\Package\PassportProvider::class,
                 \Limoncello\Templates\Package\TwigTemplatesProvider::class,
+
+                \App\Providers\CustomPassportProvider::class,
             ],
         ];
     }

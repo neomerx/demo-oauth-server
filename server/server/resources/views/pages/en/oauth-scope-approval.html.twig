@@ -1,0 +1,21 @@
+{% extends 'pages/en/base/with-header-and-footer.master.html.twig' %}
+
+{% block title %}Not Found{% endblock %}
+
+{% block content %}
+    <main role="main" class="container">
+        <p class="display-1">Client `{{ clientName }}` wants to have the following permissions</p>
+        <ul class="lead">
+            {% for scope in scopes %}
+                <li>{{ scope }}</li>
+            {% endfor %}
+        </ul>
+        <form method="post" action="oauth-scope-approval">
+
+            {{ csrf() }}
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Confirm</button>
+
+        </form>
+    </main>
+{% endblock %}

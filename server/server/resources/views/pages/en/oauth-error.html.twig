@@ -1,0 +1,11 @@
+{% extends 'pages/en/base/with-header-and-footer.master.html.twig' %}
+
+{% block title %}Not Found{% endblock %}
+
+{% block content %}
+    <article class="alert alert-warning">
+        <h1>{{ title   | default("OAuth error") }}</h1>
+        <h2>{{ message | default("Error occured") }}</h2>
+        <h3>{{ details | default("We are sorry but OAuth error occured (e.g. invalid client ID or unsupported grant type).") }}</h3>
+    </article>
+{% endblock %}

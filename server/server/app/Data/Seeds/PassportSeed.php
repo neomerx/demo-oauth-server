@@ -53,7 +53,7 @@ class PassportSeed implements SeedInterface
             static::SCOPE_ADMIN_OAUTH    => 'Can create, update and delete OAuth clients, redirect URIs and scopes.',
             static::SCOPE_ADMIN_USERS    => 'Can create, update and delete users.',
             static::SCOPE_ADMIN_ROLES    => 'Can create, update and delete roles.',
-            static::SCOPE_VIEW_USERS     => 'Can view roles.',
+            static::SCOPE_VIEW_USERS     => 'Can view users.',
             static::SCOPE_VIEW_ROLES     => 'Can view roles.',
         ];
         $scopeRepo = $integration->getScopeRepository();
@@ -101,6 +101,25 @@ class PassportSeed implements SeedInterface
         $this->assignScopes(RolesSeed::ROLE_USER, [
             static::SCOPE_VIEW_USERS,
         ]);
+
+        // Add client for external auth
+        $client = (new Client())
+            ->setIdentifier('client1')
+            ->setName('Some external client name')
+            ->setPublic()
+            ->useDefaultScopesOnEmptyRequest()
+            ->disableScopeExcess()
+            ->disablePasswordGrant()
+            ->enableCodeGrant()
+            ->disableImplicitGrant()
+            ->disableClientGrant()
+            ->enableRefreshGrant()
+            ->setScopeIdentifiers([
+                // scopes that the client wants to have from a user
+                static::SCOPE_VIEW_USERS,
+                static::SCOPE_VIEW_ROLES,
+            ]);
+        $this->seedClient($integration, $client, [], ['http://localhost:8080/my-client-redirect']);
     }
 
     /**

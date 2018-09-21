@@ -22,6 +22,8 @@ class AuthWebTest extends TestCase
 
     const SIGN_OUT_URL = '/sign-out';
 
+    const CODE_AUTHORIZE_URL = '/authorize';
+
     /**
      * Test show sign-in page.
      */
@@ -30,6 +32,27 @@ class AuthWebTest extends TestCase
         $this->captureFromNextAppCall(SessionInterface::class);
 
         $response = $this->get(self::SIGN_IN_URL);
+
+        /** @var SessionInterface $session */
+        $session = $this->getCapturedFromPreviousAppCall(SessionInterface::class);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // check CSRF token were added on page view.
+        $csrfTokens = $session['csrf_tokens'];
+        $this->assertNotEmpty($csrfTokens);
+    }
+
+    /**
+     * Test show sign-in page.
+     */
+    public function testCodeAuthorize(): void
+    {
+        $this->captureFromNextAppCall(SessionInterface::class);
+
+        $authCookie = $this->getAdminOAuthCookie();
+
+        $response = $this->get(self::CODE_AUTHORIZE_URL, ['response_type' => 'code', 'client_id' => 'client1'], [], $authCookie);
 
         /** @var SessionInterface $session */
         $session = $this->getCapturedFromPreviousAppCall(SessionInterface::class);

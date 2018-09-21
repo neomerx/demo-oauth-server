@@ -5,7 +5,10 @@ use App\Validation\Auth\SignIn;
 use App\Web\Middleware\CookieAuth;
 use App\Web\Views;
 use Limoncello\Contracts\Cookies\CookieJarInterface;
+use Limoncello\Contracts\Session\SessionInterface;
+use Limoncello\Passport\Adaptors\Generic\Token;
 use Limoncello\Passport\Contracts\PassportServerIntegrationInterface;
+use Limoncello\Passport\Contracts\PassportServerInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -47,6 +50,15 @@ class AuthController extends BaseController
 
     /** Controller handler */
     const CALLABLE_LOGOUT = [self::class, 'signOut'];
+
+    /** Controller handler */
+    const CALLABLE_SHOW_OAUTH_SCOPE_APPROVAL = [self::class, 'showOAuthScopeApproval'];
+
+    /** Controller handler */
+    const CALLABLE_POST_OAUTH_SCOPE_APPROVAL = [self::class, 'postOAuthScopeApproval'];
+
+    /** Controller handler */
+    const CALLABLE_SHOW_OAUTH_ERROR = [self::class, 'showOAuthError'];
 
     /**
      * @param array                  $routeParams
@@ -165,6 +177,100 @@ class AuthController extends BaseController
         $homeUrl = static::createRouteUrl($container, HomeController::ROUTE_NAME_HOME);
 
         return new RedirectResponse($homeUrl);
+    }
+
+    /**
+     * @param array                  $routeParams
+     * @param ContainerInterface     $container
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     *
+     * @throws ContainerExceptionInterface
+     */
+    public static function showOAuthScopeApproval(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $routeParams,
+        ContainerInterface $container,
+        ServerRequestInterface $request
+    ): ResponseInterface {
+
+        $body = static::view($container, Views::OAUTH_ERROR, [
+            // no params atm
+        ]);
+
+        return new HtmlResponse($body);
+    }
+
+    /**
+     * @param array                  $routeParams
+     * @param ContainerInterface     $container
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     *
+     * @throws ContainerExceptionInterface
+     */
+    public static function postOAuthScopeApproval(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $routeParams,
+        ContainerInterface $container,
+        ServerRequestInterface $request
+    ): ResponseInterface {
+
+        /** @var SessionInterface $session */
+        $session = $container->get(SessionInterface::class);
+        [
+            'client-id'           => $clientId,
+            'client-redirect-uri' => $redirectUri,
+            'is-scope-modified'   => $isScopeModified,
+            'initial-scopes'      => $scopeList,
+            'state-from-client'   => $state,
+        ] = $session['oauth-scopes-before-approval'];
+
+        // if you allow the user to change allowed scopes
+        // you can read the input from request and modify/replace scope list.
+
+        // as this is just a simple demo we assume the user confirmed scopes (no option to deny)
+        // so we need to create authorization code and send it to client via redirect URL.
+        $token    = (new Token())
+            ->setRedirectUriString($redirectUri)
+            ->setClientIdentifier($clientId)
+            ->setScopeIdentifiers($scopeList);
+
+        if ($isScopeModified === true) {
+            $token->setScopeModified();
+        }
+
+        /** @var PassportServerInterface $server */
+        $server = $container->get(PassportServerInterface::class);
+
+        $response = $server->createCodeResponse($token, $state);
+
+        return $response;
+    }
+
+    /**
+     * @param array                  $routeParams
+     * @param ContainerInterface     $container
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     *
+     * @throws ContainerExceptionInterface
+     */
+    public static function showOAuthError(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $routeParams,
+        ContainerInterface $container,
+        ServerRequestInterface $request
+    ): ResponseInterface {
+
+        $body = static::view($container, Views::OAUTH_ERROR, [
+            // no params atm
+        ]);
+
+        return new HtmlResponse($body);
     }
 
     /**

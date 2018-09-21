@@ -4,6 +4,7 @@ use App\Data\Models\User;
 use App\Validation\Auth\SignIn;
 use App\Web\Middleware\CookieAuth;
 use App\Web\Views;
+use GuzzleHttp\Exception\GuzzleException;
 use Limoncello\Contracts\Cookies\CookieJarInterface;
 use Limoncello\Passport\Contracts\PassportServerIntegrationInterface;
 use Psr\Container\ContainerExceptionInterface;
@@ -15,6 +16,7 @@ use Settings\Authorization;
 use Traversable;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\RedirectResponse;
+use Zend\Diactoros\Response\TextResponse;
 
 /**
  * @package App
@@ -47,6 +49,9 @@ class AuthController extends BaseController
 
     /** Controller handler */
     const CALLABLE_LOGOUT = [self::class, 'signOut'];
+
+    /** Controller handler */
+    const CALLABLE_OAUTH_CALLBACK = [self::class, 'oauthCallback'];
 
     /**
      * @param array                  $routeParams
@@ -165,6 +170,45 @@ class AuthController extends BaseController
         $homeUrl = static::createRouteUrl($container, HomeController::ROUTE_NAME_HOME);
 
         return new RedirectResponse($homeUrl);
+    }
+
+    /**
+     * @param array                  $routeParams
+     * @param ContainerInterface     $container
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     *
+     * @throws GuzzleException
+     */
+    public static function oauthCallback(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $routeParams,
+        ContainerInterface $container,
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $authCode = $request->getQueryParams()['code'] ?? null;
+        if (empty($authCode) === true) {
+            return new TextResponse('Empty auth code.', 400);
+        }
+
+        $client   = new \GuzzleHttp\Client();
+        $response = $client->request('POST', 'http://localhost:8888/token', [
+            'form_params' => [
+                'grant_type'   => 'authorization_code',
+                'code'         => $authCode,
+                'redirect_uri' => 'http://localhost:8080/my-client-redirect',
+                'client_id'    => 'client1',
+            ]
+        ]);
+
+        return new TextResponse(
+            "Auth code $authCode was sent to OAuth server and here is the response" . PHP_EOL
+            . PHP_EOL
+            . 'HTTP Status: ' . $response->getStatusCode() . PHP_EOL
+            . PHP_EOL
+            . (string)$response->getBody()
+        );
     }
 
     /**
